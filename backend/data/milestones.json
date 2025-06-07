@@ -1,0 +1,74 @@
+[
+  {
+    "_id": "1",
+    "title": "First Steps",
+    "description": "Child takes their first independent steps without support.",
+    "ageGroup": "0-3"
+  },
+  {
+    "_id": "2",
+    "title": "First Words",
+    "description": "Child says their first recognizable words like 'mama' or 'papa'.",
+    "ageGroup": "0-3"
+  },
+  {
+    "_id": "3",
+    "title": "Crawling",
+    "description": "Child crawls on hands and knees to move around.",
+    "ageGroup": "0-3"
+  },
+  {
+    "_id": "4",
+    "title": "Potty Training",
+    "description": "Child uses potty consistently during the day.",
+    "ageGroup": "0-3"
+  },
+  {
+    "_id": "5",
+    "title": "Drawing Shapes",
+    "description": "Child can draw basic shapes like circles, squares, and triangles.",
+    "ageGroup": "4-6"
+  },
+  {
+    "_id": "6",
+    "title": "Counting to 20",
+    "description": "Child can count aloud from 1 to 20 correctly.",
+    "ageGroup": "4-6"
+  },
+  {
+    "_id": "7",
+    "title": "Writing Name",
+    "description": "Child can write their own name legibly.",
+    "ageGroup": "4-6"
+  },
+  {
+    "_id": "8",
+    "title": "Tying Shoelaces",
+    "description": "Child learns to tie their own shoelaces independently.",
+    "ageGroup": "4-6"
+  },
+  {
+    "_id": "9",
+    "title": "Reading Simple Sentences",
+    "description": "Child can read simple sentences and short stories independently.",
+    "ageGroup": "7-8"
+  },
+  {
+    "_id": "10",
+    "title": "Basic Math Operations",
+    "description": "Child can perform simple addition and subtraction (up to 20).",
+    "ageGroup": "7-8"
+  },
+  {
+    "_id": "11",
+    "title": "Riding a Bicycle",
+    "description": "Child can ride a bicycle without training wheels.",
+    "ageGroup": "7-8"
+  },
+  {
+    "_id": "12",
+    "title": "Following Multi-step Instructions",
+    "description": "Child can follow complex instructions with 3-4 steps.",
+    "ageGroup": "7-8"
+  }
+]

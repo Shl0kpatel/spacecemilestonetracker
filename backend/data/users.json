@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "role": "parent",
+    "name": "Rajesh Kumar",
+    "contact": "+919876543210",
+    "username": "rajesh_kumar",
+    "password": "parent123"
+  },
+  {
+    "id": 2,
+    "role": "parent",
+    "name": "Priya Sharma",
+    "contact": "+919812345678",
+    "username": "priya_sharma",
+    "password": "parent456"
+  },
+  {
+    "id": 3,
+    "role": "parent",
+    "name": "Amit Patel",
+    "contact": "+919800112233",
+    "username": "amit_patel",
+    "password": "parent789"
+  },
+  {
+    "id": 4,
+    "role": "volunteer",
+    "name": "Dr. Sneha Gupta",
+    "contact": "+919811223344",
+    "username": "sneha_volunteer",
+    "password": "volunteer123"
+  },
+  {
+    "id": 5,
+    "role": "volunteer",
+    "name": "Rohit Singh",
+    "contact": "+919822334455",
+    "username": "rohit_volunteer",
+    "password": "volunteer456"
+  }
+]
