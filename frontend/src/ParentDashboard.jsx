@@ -10,6 +10,10 @@ const ParentDashboard = () => {
   const [selectedMilestone, setSelectedMilestone] = useState(null);
   const [mediaUrl, setMediaUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [ticketMessage, setTicketMessage] = useState('');
+  const [ticketSubmitting, setTicketSubmitting] = useState(false);
+  const [ticketSuccess, setTicketSuccess] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -94,6 +98,41 @@ const ParentDashboard = () => {
     }
   };
 
+  // Ticket submission handler
+  const handleTicketSubmit = async (e) => {
+    e.preventDefault();
+    setTicketSubmitting(true);
+    setTicketSuccess(false);
+    try {
+      const response = await fetch('http://localhost:3000/api/parents/ticket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          parentId: user.id,
+          message: ticketMessage.trim(),
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setTicketSubmitting(false);
+        setTicketSuccess(true);
+        setTicketMessage('');
+        setTimeout(() => {
+          setShowTicketModal(false);
+          setTicketSuccess(false);
+        }, 1500);
+      } else {
+        setTicketSubmitting(false);
+        alert(data.error || 'Failed to send ticket');
+      }
+    } catch (error) {
+      setTicketSubmitting(false);
+      alert('Network error. Please try again.');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/');
@@ -138,12 +177,20 @@ const ParentDashboard = () => {
               <h1 className="text-2xl font-bold text-gray-900">Parent Dashboard</h1>
               <p className="text-gray-600">Welcome back, {user?.name}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Logout
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowTicketModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Raise a Ticket
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -313,6 +360,44 @@ const ParentDashboard = () => {
                   className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50"
                 >
                   {submitting ? 'Submitting...' : 'Submit'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Ticket Modal */}
+      {showTicketModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Raise a Ticket</h3>
+            <form onSubmit={handleTicketSubmit}>
+              <textarea
+                className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                rows={4}
+                placeholder="Describe your concern here..."
+                value={ticketMessage}
+                onChange={e => setTicketMessage(e.target.value)}
+                required
+              />
+              {ticketSuccess && (
+                <div className="mb-2 text-green-600 text-sm">Successfully sent!</div>
+              )}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowTicketModal(false); setTicketMessage(''); setTicketSuccess(false); }}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={ticketSubmitting}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50"
+                >
+                  {ticketSubmitting ? 'Sending...' : 'Send'}
                 </button>
               </div>
             </form>

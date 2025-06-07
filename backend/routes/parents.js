@@ -231,4 +231,45 @@ router.get('/child/:childId/submissions', (req, res) => {
   }
 });
 
+// Raise a ticket from parent
+router.post('/ticket', (req, res) => {
+  try {
+    const { parentId, message } = req.body;
+    if (!parentId || !message || !message.trim()) {
+      return res.status(400).json({ error: 'Parent ID and message are required' });
+    }
+    const users = readJSONFile('users.json');
+    const parent = users.find(u => u.id === parentId && u.role === 'parent');
+    if (!parent) {
+      return res.status(404).json({ error: 'Parent not found' });
+    }
+    const tickets = readJSONFile('tickets.json');
+    const newTicket = {
+      _id: 'ticket_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      parentId,
+      parentName: parent.name,
+      message: message.trim(),
+      createdAt: new Date().toISOString(),
+      status: 'open'
+    };
+    tickets.push(newTicket);
+    writeJSONFile('tickets.json', tickets);
+    res.status(201).json({ message: 'Ticket submitted successfully', ticket: newTicket });
+  } catch (error) {
+    console.error('Ticket submission error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all parent tickets (for volunteers)
+router.get('/tickets', (req, res) => {
+  try {
+    const tickets = readJSONFile('tickets.json');
+    res.json(tickets);
+  } catch (error) {
+    console.error('Error fetching tickets:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;

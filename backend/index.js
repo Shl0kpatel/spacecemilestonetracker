@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const cors = require("cors");
 const app = express();
 const authRoutes = require("./routes/auth");
 const parentRoutes = require("./routes/parents");
@@ -7,12 +8,7 @@ const volunteerRoutes = require("./routes/volunteers");
 const milestoneRoutes = require("./routes/milestones");
 
 // Enable CORS for frontend communication
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+app.use(cors());
 
 app.use(express.json());
 

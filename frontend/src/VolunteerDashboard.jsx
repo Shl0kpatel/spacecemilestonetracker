@@ -13,6 +13,8 @@ const VolunteerDashboard = () => {
   const [submitting, setSubmitting] = useState(false);
   const [filter, setFilter] = useState('pending');
   const [allSubmissions, setAllSubmissions] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [ticketsLoading, setTicketsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +32,7 @@ const VolunteerDashboard = () => {
 
     setUser(parsedUser);
     fetchDashboardData();
+    fetchTickets();
   }, [navigate]);
 
   const fetchDashboardData = async () => {
@@ -62,6 +65,23 @@ const VolunteerDashboard = () => {
       }
     } catch (error) {
       console.error('Network error:', error);
+    }
+  };
+
+  const fetchTickets = async () => {
+    setTicketsLoading(true);
+    try {
+      const response = await fetch('http://localhost:3000/api/parents/tickets');
+      const data = await response.json();
+      if (response.ok) {
+        setTickets(data);
+      } else {
+        setTickets([]);
+      }
+    } catch (error) {
+      setTickets([]);
+    } finally {
+      setTicketsLoading(false);
     }
   };
 
@@ -171,6 +191,34 @@ const VolunteerDashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Tickets from Parents */}
+        <div className="bg-white rounded-lg shadow mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Parent Tickets</h2>
+          </div>
+          {ticketsLoading ? (
+            <div className="text-center py-8 text-gray-500">Loading tickets...</div>
+          ) : tickets.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No tickets found.</div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {tickets.map(ticket => (
+                <div key={ticket._id} className="px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900">{ticket.parentName}</div>
+                      <div className="text-sm text-gray-600">{ticket.message}</div>
+                    </div>
+                    <div className="text-xs text-gray-500 text-right">
+                      {new Date(ticket.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
