@@ -4,6 +4,7 @@ import Login from './Login'
 import Register from './Register'
 import ParentDashboard from './ParentDashboard'
 import VolunteerDashboard from './VolunteerDashboard'
+import ChildRegistration from './ChildRegistration'
 import MilestoneDisplay from './MilestoneDisplay'
 import './App.css'
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/child-registration" element={<ChildRegistration />} />
         <Route path="/parent-dashboard" element={<ParentDashboard />} />
         <Route path="/volunteer-dashboard" element={<VolunteerDashboard />} />
         <Route path="/milestonesstatus" element={<MilestoneDisplay />} />

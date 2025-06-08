@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from "react-i18next";
 
 const VolunteerDashboard = () => {
   const [user, setUser] = useState(null);
-  const [pendingSubmissions, setPendingSubmissions] = useState([]);
   const [statistics, setStatistics] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
@@ -17,6 +16,7 @@ const VolunteerDashboard = () => {
   const [submitting, setSubmitting] = useState(false);
   const [filter, setFilter] = useState('pending');
   const [allSubmissions, setAllSubmissions] = useState([]);
+  const [pendingSubmissions, setPendingSubmissions] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [ticketsLoading, setTicketsLoading] = useState(true);
   const [replyingTicketId, setReplyingTicketId] = useState(null);

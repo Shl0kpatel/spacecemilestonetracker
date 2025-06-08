@@ -53,11 +53,19 @@ router.get('/dashboard/:parentId', (req, res) => {
       const relevantMilestones = milestones.filter(m => m.ageGroup === child.ageGroup);
       const childMilestoneStatus = milestoneStatus.filter(ms => ms.childId === child._id);
       
+      // Get valid milestone IDs for this age group
+      const validMilestoneIds = relevantMilestones.map(m => m._id);
+      
+      // Only count submissions for milestones that currently exist
+      const validChildMilestoneStatus = childMilestoneStatus.filter(ms => 
+        validMilestoneIds.includes(ms.milestoneId)
+      );
+      
       const progress = {
         total: relevantMilestones.length,
-        completed: childMilestoneStatus.filter(ms => ms.status === 'accepted').length,
-        pending: childMilestoneStatus.filter(ms => ms.status === 'pending').length,
-        rejected: childMilestoneStatus.filter(ms => ms.status === 'rejected').length
+        completed: validChildMilestoneStatus.filter(ms => ms.status === 'accepted').length,
+        pending: validChildMilestoneStatus.filter(ms => ms.status === 'pending').length,
+        rejected: validChildMilestoneStatus.filter(ms => ms.status === 'rejected').length
       };
 
       return {
@@ -65,7 +73,7 @@ router.get('/dashboard/:parentId', (req, res) => {
         id: child._id, // Add id field for frontend compatibility
         progress,
         milestones: relevantMilestones.map(milestone => {
-          const status = childMilestoneStatus.find(ms => ms.milestoneId === milestone._id);
+          const status = validChildMilestoneStatus.find(ms => ms.milestoneId === milestone._id);
           return {
             ...milestone,
             id: milestone._id, // Add id field for frontend compatibility
@@ -84,6 +92,157 @@ router.get('/dashboard/:parentId', (req, res) => {
     });
   } catch (error) {
     console.error('Dashboard error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Register a new child for a parent
+router.post('/child/register', (req, res) => {
+  try {
+    const { name, dob, gender, medicalConditions, allergies, parentId, ageGroup } = req.body;
+
+    // Validation
+    if (!name || !dob || !parentId) {
+      return res.status(400).json({ error: 'Name, date of birth, and parent ID are required' });
+    }
+
+    // Validate date of birth is not in the future
+    const birthDate = new Date(dob);
+    const today = new Date();
+    if (birthDate > today) {
+      return res.status(400).json({ error: 'Date of birth cannot be in the future' });
+    }
+
+    // Read existing children
+    const children = readJSONFile('children.json');
+
+    // Generate a unique ID for the child
+    const childId = `child_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Create new child object
+    const newChild = {
+      _id: childId,
+      parentId: parseInt(parentId),
+      name: name.trim(),
+      dob,
+      ageGroup,
+      gender: gender || null,
+      medicalConditions: medicalConditions || null,
+      allergies: allergies || null,
+      createdAt: new Date().toISOString()
+    };
+
+    // Add new child to the array
+    children.push(newChild);
+
+    // Write back to file
+    const success = writeJSONFile('children.json', children);
+    
+    if (success) {
+      res.status(201).json({ 
+        message: 'Child registered successfully',
+        child: newChild
+      });
+    } else {
+      res.status(500).json({ error: 'Failed to save child data' });
+    }
+  } catch (error) {
+    console.error('Child registration error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all children for a parent
+router.get('/children/:parentId', (req, res) => {
+  try {
+    const parentId = parseInt(req.params.parentId);
+    const children = readJSONFile('children.json');
+
+    // Get children for this parent
+    const parentChildren = children.filter(child => child.parentId === parentId);
+
+    res.json({
+      children: parentChildren
+    });
+  } catch (error) {
+    console.error('Get children error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update child information
+router.put('/child/:childId', (req, res) => {
+  try {
+    const childId = req.params.childId;
+    const { name, dob, gender, medicalConditions, allergies } = req.body;
+
+    // Validation
+    if (!name || !dob) {
+      return res.status(400).json({ error: 'Name and date of birth are required' });
+    }
+
+    // Validate date of birth is not in the future
+    const birthDate = new Date(dob);
+    const today = new Date();
+    if (birthDate > today) {
+      return res.status(400).json({ error: 'Date of birth cannot be in the future' });
+    }
+
+    // Read existing children
+    const children = readJSONFile('children.json');
+
+    // Find the child to update
+    const childIndex = children.findIndex(child => child._id === childId);
+    if (childIndex === -1) {
+      return res.status(404).json({ error: 'Child not found' });
+    }
+
+    // Calculate new age group
+    const calculateAgeGroup = (dob) => {
+      const today = new Date();
+      const birthDate = new Date(dob);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      let actualAge = age;
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        actualAge--;
+      }
+
+      if (actualAge >= 0 && actualAge <= 3) return '0-3';
+      if (actualAge >= 4 && actualAge <= 6) return '4-6';
+      if (actualAge >= 7 && actualAge <= 8) return '7-8';
+      if (actualAge >= 9 && actualAge <= 12) return '9-12';
+      return '13+';
+    };
+
+    const ageGroup = calculateAgeGroup(dob);
+
+    // Update child information
+    children[childIndex] = {
+      ...children[childIndex],
+      name: name.trim(),
+      dob,
+      ageGroup,
+      gender: gender || children[childIndex].gender,
+      medicalConditions: medicalConditions || children[childIndex].medicalConditions,
+      allergies: allergies || children[childIndex].allergies,
+      updatedAt: new Date().toISOString()
+    };
+
+    // Write back to file
+    const success = writeJSONFile('children.json', children);
+    
+    if (success) {
+      res.json({ 
+        message: 'Child information updated successfully',
+        child: children[childIndex]
+      });
+    } else {
+      res.status(500).json({ error: 'Failed to update child data' });
+    }
+  } catch (error) {
+    console.error('Child update error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

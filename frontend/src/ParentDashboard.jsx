@@ -388,6 +388,15 @@ const ParentDashboard = () => {
               <p className="text-gray-600">{t('welcomeBack', { name: user?.name })}</p>
             </div>
             <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/child-registration')}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                {t('addChild') || 'Add Child'}
+              </button>
               <LanguageSwitcher />
             </div>
             <div className="flex gap-2 items-center">
@@ -429,9 +438,18 @@ const ParentDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🧶</div>
+            <div className="text-gray-400 text-6xl mb-4">👶</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noChildrenFound')}</h3>
-            <p className="text-gray-600">{t('contactAdminToAddChildren')}</p>
+            <p className="text-gray-600 mb-6">{t('noChildrenMessage') || 'Start tracking your child\'s developmental milestones by adding them to your account.'}</p>
+            <button
+              onClick={() => navigate('/child-registration')}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md text-sm font-medium inline-flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              {t('addFirstChild') || 'Add Your First Child'}
+            </button>
           </div>
         ) : (
           <div className="space-y-8">
@@ -444,12 +462,33 @@ const ParentDashboard = () => {
                       <p className="text-gray-600">
                         {t('age')}: {child.age} • {t('ageGroup')}: {child.ageGroup}
                       </p>
+                      {(child.gender || child.medicalConditions || child.allergies) && (
+                        <div className="mt-2 text-sm text-gray-500">
+                          {child.gender && <span className="mr-4">{t('gender')}: {child.gender}</span>}
+                          {child.medicalConditions && (
+                            <div className="mt-1">
+                              <span className="font-medium">{t('medicalConditions')}:</span> {child.medicalConditions}
+                            </div>
+                          )}
+                          {child.allergies && (
+                            <div className="mt-1">
+                              <span className="font-medium">{t('allergies')}:</span> {child.allergies}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-indigo-600">
                         {child.progress.completed}/{child.progress.total}
                       </div>
                       <p className="text-sm text-gray-600">{t('milestonesCompleted')}</p>
+                      <button
+                        onClick={() => navigate('/child-registration')}
+                        className="mt-2 text-sm text-indigo-600 hover:text-indigo-500 underline"
+                      >
+                        {t('editChildInfo') || 'Edit Info'}
+                      </button>
                     </div>
                   </div>
                   {/* Progress Bar */}

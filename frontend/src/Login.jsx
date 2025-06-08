@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import bg from './assets/loginimg.jpeg';
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -108,15 +108,7 @@ const Login = () => {
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Sign in to your account
           </h2>
-          <button
-            type="button"
-            aria-label={t('playAudioGuide')}
-            onClick={handlePlayAudio}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 28 }}
-          >
-            <span role="img" aria-label="audio">🔊</span>
-          </button>
-        </div>
+      </div>
 
         <form className="mt-8 space-y-6 bg-white bg-opacity-90 p-8 rounded-lg shadow-lg border border-pink-100" onSubmit={handleSubmit}>
           {error && (
