@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const VolunteerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -16,6 +18,7 @@ const VolunteerDashboard = () => {
   const [filter, setFilter] = useState('pending');
   const [allSubmissions, setAllSubmissions] = useState([]);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -176,13 +179,19 @@ const VolunteerDashboard = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+          <p className="mt-4 text-gray-600">{t('loadingDashboard')}</p>
         </div>
       </div>
     );
   }
 
   const currentSubmissions = filter === 'pending' ? pendingSubmissions : allSubmissions;
+  const filterTabs = [
+    { key: 'pending', label: t('pendingReview'), count: statistics.totalPending },
+    { key: 'accepted', label: t('accepted'), count: statistics.totalAccepted },
+    { key: 'rejected', label: t('rejected'), count: statistics.totalRejected },
+    { key: 'all', label: t('allSubmissions'), count: statistics.totalSubmissions }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -191,15 +200,18 @@ const VolunteerDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Volunteer Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.name}</p>
+              <h1 className="text-2xl font-bold text-gray-900">{t('volunteerDashboardTitle')}</h1>
+              <p className="text-gray-600">{t('welcomeBack', { name: user?.name })}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Logout
-            </button>
+            <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                {t('logout')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -213,7 +225,7 @@ const VolunteerDashboard = () => {
                 <div className="w-6 h-6 text-yellow-600">⏳</div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending Review</p>
+                <p className="text-sm font-medium text-gray-600">{t('pendingReview')}</p>
                 <p className="text-2xl font-semibold text-gray-900">{statistics.totalPending || 0}</p>
               </div>
             </div>
@@ -225,7 +237,7 @@ const VolunteerDashboard = () => {
                 <div className="w-6 h-6 text-green-600">✅</div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Accepted</p>
+                <p className="text-sm font-medium text-gray-600">{t('accepted')}</p>
                 <p className="text-2xl font-semibold text-gray-900">{statistics.totalAccepted || 0}</p>
               </div>
             </div>
@@ -237,7 +249,7 @@ const VolunteerDashboard = () => {
                 <div className="w-6 h-6 text-red-600">❌</div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Rejected</p>
+                <p className="text-sm font-medium text-gray-600">{t('rejected')}</p>
                 <p className="text-2xl font-semibold text-gray-900">{statistics.totalRejected || 0}</p>
               </div>
             </div>
@@ -249,7 +261,7 @@ const VolunteerDashboard = () => {
                 <div className="w-6 h-6 text-blue-600">📊</div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total</p>
+                <p className="text-sm font-medium text-gray-600">{t('total')}</p>
                 <p className="text-2xl font-semibold text-gray-900">{statistics.totalSubmissions || 0}</p>
               </div>
             </div>
@@ -260,12 +272,7 @@ const VolunteerDashboard = () => {
         <div className="bg-white rounded-lg shadow mb-6">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8 px-6">
-              {[
-                { key: 'pending', label: 'Pending Review', count: statistics.totalPending },
-                { key: 'accepted', label: 'Accepted', count: statistics.totalAccepted },
-                { key: 'rejected', label: 'Rejected', count: statistics.totalRejected },
-                { key: 'all', label: 'All Submissions', count: statistics.totalSubmissions }
-              ].map((tab) => (
+              {filterTabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => handleFilterChange(tab.key)}
@@ -286,18 +293,18 @@ const VolunteerDashboard = () => {
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-medium text-gray-900">
-              {filter === 'pending' ? 'Pending Submissions' : 
-               filter === 'all' ? 'All Submissions' : 
-               `${filter.charAt(0).toUpperCase() + filter.slice(1)} Submissions`}
+              {filter === 'pending' ? t('pendingSubmissions') : 
+               filter === 'all' ? t('allSubmissions') : 
+               `${t(filter)} ${t('submissions')}`}
             </h2>
           </div>
 
           {currentSubmissions.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-400 text-6xl mb-4">📋</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Submissions Found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noSubmissionsFound')}</h3>
               <p className="text-gray-600">
-                {filter === 'pending' ? 'No submissions waiting for review.' : `No ${filter} submissions.`}
+                {filter === 'pending' ? t('noSubmissionsWaiting') : t('noSubmissionsForFilter', { filter: t(filter) })}
               </p>
             </div>
           ) : (
@@ -311,18 +318,18 @@ const VolunteerDashboard = () => {
                           {submission.milestoneTitle}
                         </h3>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(submission.status)}`}>
-                          {submission.status}
+                          {t(submission.status)}
                         </span>
                       </div>
                       
                       <div className="mt-2 grid grid-cols-2 gap-4 text-sm text-gray-600">
                         <div>
-                          <p><strong>Child:</strong> {submission.childName} (Age {submission.childAge})</p>
-                          <p><strong>Parent:</strong> {submission.parentName}</p>
+                          <p><strong>{t('child')}:</strong> {submission.childName} ({t('age')} {submission.childAge})</p>
+                          <p><strong>{t('parent')}:</strong> {submission.parentName}</p>
                         </div>
                         <div>
-                          <p><strong>Category:</strong> {submission.milestoneCategory}</p>
-                          <p><strong>Submitted:</strong> {formatDate(submission.submittedAt)}</p>
+                          <p><strong>{t('category')}:</strong> {submission.milestoneCategory}</p>
+                          <p><strong>{t('submitted')}:</strong> {formatDate(submission.submittedAt)}</p>
                         </div>
                       </div>
                       
@@ -330,7 +337,7 @@ const VolunteerDashboard = () => {
                       
                       {submission.feedback && (
                         <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                          <strong>Feedback:</strong> {submission.feedback}
+                          <strong>{t('feedback')}:</strong> {submission.feedback}
                         </div>
                       )}
                     </div>
@@ -367,7 +374,7 @@ const VolunteerDashboard = () => {
                           }}
                           className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                         >
-                          Review
+                          {t('review')}
                         </button>
                       )}
                     </div>
@@ -384,13 +391,13 @@ const VolunteerDashboard = () => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-lg w-full p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Review Submission: {selectedSubmission.milestoneTitle}
+              {t('reviewSubmissionFor', { title: selectedSubmission.milestoneTitle })}
             </h3>
             
             <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-              <p><strong>Child:</strong> {selectedSubmission.childName} (Age {selectedSubmission.childAge})</p>
-              <p><strong>Parent:</strong> {selectedSubmission.parentName}</p>
-              <p className="mt-2"><strong>Milestone:</strong> {selectedSubmission.milestoneDescription}</p>
+              <p><strong>{t('child')}:</strong> {selectedSubmission.childName} ({t('age')} {selectedSubmission.childAge})</p>
+              <p><strong>{t('parent')}:</strong> {selectedSubmission.parentName}</p>
+              <p className="mt-2"><strong>{t('milestone')}:</strong> {selectedSubmission.milestoneDescription}</p>
               {selectedSubmission.mediaUrl && (
                 <div className="mt-3">
                   <strong>Media:</strong>
@@ -421,7 +428,7 @@ const VolunteerDashboard = () => {
             <form onSubmit={handleReviewSubmission}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Decision
+                  {t('decision')}
                 </label>
                 <select
                   value={reviewStatus}
@@ -429,22 +436,22 @@ const VolunteerDashboard = () => {
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  <option value="">Select decision...</option>
-                  <option value="accepted">Accept</option>
-                  <option value="rejected">Reject</option>
+                  <option value="">{t('selectDecision')}</option>
+                  <option value="accepted">{t('accept')}</option>
+                  <option value="rejected">{t('reject')}</option>
                 </select>
               </div>
               
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Feedback {reviewStatus === 'rejected' && <span className="text-red-500">(Required for rejection)</span>}
+                  {t('feedback')} {reviewStatus === 'rejected' && <span className="text-red-500">({t('requiredForRejection')})</span>}
                 </label>
                 <textarea
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   required={reviewStatus === 'rejected'}
                   rows={3}
-                  placeholder={reviewStatus === 'accepted' ? 'Great job! (optional)' : 'Please provide feedback...'}
+                  placeholder={reviewStatus === 'accepted' ? t('greatJobOptional') : t('pleaseProvideFeedback')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
@@ -460,14 +467,14 @@ const VolunteerDashboard = () => {
                   }}
                   className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !reviewStatus}
                   className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50"
                 >
-                  {submitting ? 'Submitting...' : 'Submit Review'}
+                  {submitting ? t('submitting') : t('submitReview')}
                 </button>
               </div>
             </form>

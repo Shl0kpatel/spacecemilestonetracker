@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,10 +63,10 @@ const Register = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            {t('registerTitle')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Join us to track developmental milestones
+            {t('registerSubtitle')}
           </p>
         </div>
         
@@ -78,7 +80,7 @@ const Register = () => {
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
+                {t('fullName')}
               </label>
               <input
                 id="name"
@@ -88,13 +90,13 @@ const Register = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your full name"
+                placeholder={t('fullNamePlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="contact" className="block text-sm font-medium text-gray-700">
-                Contact Number
+                {t('contactNumber')}
               </label>
               <input
                 id="contact"
@@ -104,13 +106,13 @@ const Register = () => {
                 value={formData.contact}
                 onChange={handleChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-                placeholder="+91xxxxxxxxxx"
+                placeholder={t('contactPlaceholder')}
               />
             </div>
             
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username
+                {t('username')}
               </label>
               <input
                 id="username"
@@ -120,13 +122,13 @@ const Register = () => {
                 value={formData.username}
                 onChange={handleChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-                placeholder="Choose a username"
+                placeholder={t('usernamePlaceholder')}
               />
             </div>
             
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+                {t('password')}
               </label>
               <input
                 id="password"
@@ -136,13 +138,13 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your password"
+                placeholder={t('passwordPlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                Role
+                {t('role')}
               </label>
               <select
                 id="role"
@@ -151,11 +153,11 @@ const Register = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
               >
-                <option value="parent">Parent</option>
-                <option value="volunteer">Volunteer</option>
+                <option value="parent">{t('parent')}</option>
+                <option value="volunteer">{t('volunteer')}</option>
               </select>
               <p className="mt-1 text-xs text-gray-500">
-                Parents can track their children's milestones. Volunteers can review submissions.
+                {t('roleDesc')}
               </p>
             </div>
           </div>
@@ -166,15 +168,15 @@ const Register = () => {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating account...' : 'Create account'}
+              {loading ? t('creatingAccount') : t('createAccount')}
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
+              {t('alreadyAccount')}{' '}
               <Link to="/login" className="font-medium text-emerald-600 hover:text-emerald-500">
-                Sign in here
+                {t('signInHere')}
               </Link>
             </p>
           </div>
