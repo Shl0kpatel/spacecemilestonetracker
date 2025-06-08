@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import bg from './assets/loginimg.jpeg';
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
-  });
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -73,28 +71,18 @@ const Login = () => {
     try {
       const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Store user data in localStorage
         localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Navigate based on role
-        if (data.user.role === 'parent') {
-          navigate('/parent-dashboard');
-        } else if (data.user.role === 'volunteer') {
-          navigate('/volunteer-dashboard');
-        }
-      } else {
-        setError(data.error || 'Login failed');
-      }
-    } catch (error) {
+        if (data.user.role === 'parent') navigate('/parent-dashboard');
+        else if (data.user.role === 'volunteer') navigate('/volunteer-dashboard');
+      } else setError(data.error || 'Login failed');
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -102,18 +90,23 @@ const Login = () => {
   };
 
   const handleChange = (e) => {
-    setCredentials({
-      ...credentials,
-      [e.target.name]: e.target.value
-    });
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="flex justify-center items-center space-x-2">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('loginTitle')}
+    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+      
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center brightness-90 opacity-30 blur-sm"
+        style={{ backgroundImage: `url(${bg})` }}
+      />
+
+      {/* Form container */}
+      <div className="relative z-10 max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+            Sign in to your account
           </h2>
           <button
             type="button"
@@ -124,10 +117,10 @@ const Login = () => {
             <span role="img" aria-label="audio">🔊</span>
           </button>
         </div>
-        
-        <form className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md" onSubmit={handleSubmit}>
+
+        <form className="mt-8 space-y-6 bg-white bg-opacity-90 p-8 rounded-lg shadow-lg border border-pink-100" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+            <div className="bg-red-100 border border-red-300 rounded-md p-4">
               <p className="text-red-800 text-sm">{error}</p>
             </div>
           )}
@@ -192,7 +185,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 disabled:opacity-50"
             >
               {loading ? t('signingIn') : t('signIn')}
             </button>
