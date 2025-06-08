@@ -21,7 +21,10 @@ const ParentDashboard = () => {
   const [showTicketReplies, setShowTicketReplies] = useState(false);
   const [latestVolunteerReply, setLatestVolunteerReply] = useState(null);
   const [hasNewReply, setHasNewReply] = useState(false);
+  const [ticketLang, setTicketLang] = useState('en-IN');
+  const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
+  let recognitionRef = null;
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -313,6 +316,38 @@ const ParentDashboard = () => {
       case 'pending': return 'Under Review';
       default: return 'Not Started';
     }
+  };
+
+  const handleSpeechToText = () => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      alert('Web Speech API is not supported in this browser.');
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!recognitionRef) {
+      recognitionRef = new SpeechRecognition();
+    }
+    recognitionRef.lang = ticketLang;
+    recognitionRef.interimResults = false;
+    recognitionRef.maxAlternatives = 1;
+    setIsListening(true);
+    recognitionRef.onresult = async (event) => {
+      let transcript = event.results[0][0].transcript;
+      if (ticketLang === 'hi-IN') {
+        // Translate to Hindi if not already (most browsers will return Hindi text for hi-IN)
+        // If you want to ensure translation, you can use a translation API here.
+        setTicketMessage(prev => prev + (prev ? ' ' : '') + transcript);
+      } else {
+        setTicketMessage(prev => prev + (prev ? ' ' : '') + transcript);
+      }
+      setIsListening(false);
+    };
+    recognitionRef.onerror = (event) => {
+      setIsListening(false);
+      alert('Speech recognition error: ' + event.error);
+    };
+    recognitionRef.onend = () => setIsListening(false);
+    recognitionRef.start();
   };
 
   if (loading) {
@@ -671,10 +706,31 @@ const ParentDashboard = () => {
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Raise a Ticket</h3>
             <form onSubmit={handleTicketSubmit}>
+              <div className="mb-2 flex items-center gap-2">
+                <label htmlFor="lang-select" className="text-sm text-gray-700">Language:</label>
+                <select
+                  id="lang-select"
+                  value={ticketLang}
+                  onChange={e => setTicketLang(e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-indigo-500"
+                >
+                  <option value="en-IN">English</option>
+                  <option value="hi-IN">Hindi</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={handleSpeechToText}
+                  className={`ml-2 px-3 py-1 rounded bg-indigo-600 text-white text-xs font-medium flex items-center gap-1 ${isListening ? 'bg-indigo-800' : ''}`}
+                  title={isListening ? 'Listening...' : 'Start voice input'}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v2m0 0h4m-4 0H8m8-6a4 4 0 01-8 0V7a4 4 0 018 0v5z" /></svg>
+                  {isListening ? 'Listening...' : 'Speak'}
+                </button>
+              </div>
               <textarea
                 className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 rows={4}
-                placeholder="Describe your concern here..."
+                placeholder={ticketLang === 'hi-IN' ? 'अपनी समस्या यहाँ लिखें...' : 'Describe your concern here...'}
                 value={ticketMessage}
                 onChange={e => setTicketMessage(e.target.value)}
                 required
