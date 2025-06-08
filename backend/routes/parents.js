@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const { uploadMedia } = require('../config/cloudinary');
 
 // Helper functions
 const readJSONFile = (filename) => {
@@ -133,7 +134,86 @@ router.get('/child/:childId/milestones', (req, res) => {
   }
 });
 
-// Submit milestone with media URL
+// Submit milestone with file upload (NEW) - with Multer error handling
+router.post('/milestone/submit-with-file', (req, res) => {
+  uploadMedia.single('media')(req, res, function (err) {
+    if (err) {
+      // Multer or Cloudinary error
+      console.error('Multer/Cloudinary error:', err);
+      return res.status(500).json({ error: 'File upload error', details: err.message || err });
+    }
+    try {
+      console.log('=== FILE UPLOAD MILESTONE SUBMISSION ===');
+      console.log('Request body:', req.body);
+      console.log('Uploaded file:', req.file);
+
+      const { childId, milestoneId } = req.body;
+
+      if (!childId || !milestoneId) {
+        return res.status(400).json({ error: 'Child ID and Milestone ID are required' });
+      }
+
+      const children = readJSONFile('children.json');
+      const milestones = readJSONFile('milestones.json');
+      const milestoneStatus = readJSONFile('milestoneStatus.json');
+
+      // Verify child and milestone exist
+      const child = children.find(c => c._id === childId);
+      const milestone = milestones.find(m => m._id === milestoneId);
+
+      if (!child || !milestone) {
+        return res.status(404).json({ error: 'Child or milestone not found' });
+      }
+
+      // Check if milestone already submitted
+      const existingSubmission = milestoneStatus.find(
+        ms => ms.childId === childId && ms.milestoneId === milestoneId
+      );
+
+      if (existingSubmission) {
+        return res.status(409).json({ error: 'Milestone already submitted' });
+      }
+
+      // Get file URL from Cloudinary upload
+      const mediaUrl = req.file ? req.file.path : null;
+      const fileType = req.file ? req.file.mimetype : null;
+      const fileName = req.file ? req.file.originalname : null;
+      const fileSize = req.file ? (req.file.size / (1024 * 1024)).toFixed(2) : null; // Size in MB
+
+      // Create new milestone status entry
+      const newSubmission = {
+        _id: 'ms_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        childId: childId,
+        milestoneId: milestoneId,
+        status: 'pending',
+        mediaUrl: mediaUrl,
+        mediaType: fileType ? (fileType.startsWith('image/') ? 'image' : 'video') : null,
+        mediaSize: fileSize ? parseFloat(fileSize) : null,
+        mediaDuration: null, // Will be set by Cloudinary for videos
+        fileName: fileName,
+        fileType: fileType,
+        submittedAt: new Date().toISOString(),
+        reviewedAt: null,
+        reviewedBy: null,
+        rejectionReason: null,
+        feedback: null
+      };
+
+      milestoneStatus.push(newSubmission);
+      writeJSONFile('milestoneStatus.json', milestoneStatus);
+
+      res.status(201).json({
+        message: 'Milestone submitted successfully with file upload',
+        submission: newSubmission
+      });
+    } catch (error) {
+      console.error('File upload submission error:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message || error });
+    }
+  });
+});
+
+// Submit milestone with media URL (LEGACY - keeping for backward compatibility)
 router.post('/milestone/submit', (req, res) => {
   try {
     console.log('=== MILESTONE SUBMISSION DEBUG ===');
@@ -187,9 +267,15 @@ router.post('/milestone/submit', (req, res) => {
       milestoneId: milestoneId,
       status: 'pending',
       mediaUrl: mediaUrl || null,
+      mediaType: null,
+      mediaSize: null,
+      mediaDuration: null,
+      fileName: null,
+      fileType: null,
       submittedAt: new Date().toISOString(),
       reviewedAt: null,
       reviewedBy: null,
+      rejectionReason: null,
       feedback: null
     };
 

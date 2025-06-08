@@ -8,6 +8,8 @@ const VolunteerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showMediaModal, setShowMediaModal] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState(null);
   const [reviewStatus, setReviewStatus] = useState('');
   const [feedback, setFeedback] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -197,6 +199,38 @@ const VolunteerDashboard = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const isImageFile = (fileType) => {
+    return fileType && fileType.startsWith('image/');
+  };
+
+  const isVideoFile = (fileType) => {
+    return fileType && fileType.startsWith('video/');
+  };
+
+  const getFileTypeFromUrl = (url) => {
+    if (!url) return null;
+    const extension = url.split('.').pop()?.toLowerCase();
+    
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
+      return 'image/*';
+    } else if (['mp4', 'avi', 'mov', 'wmv'].includes(extension)) {
+      return 'video/*';
+    }
+    return null;
+  };
+
+  const handleViewMedia = (submission) => {
+    if (submission.mediaUrl) {
+      setSelectedMedia({
+        url: submission.mediaUrl,
+        type: submission.fileType || getFileTypeFromUrl(submission.mediaUrl),
+        fileName: submission.fileName || 'Uploaded Media',
+        submission: submission
+      });
+      setShowMediaModal(true);
+    }
   };
 
   if (loading) {
@@ -428,14 +462,26 @@ const VolunteerDashboard = () => {
                     
                     <div className="ml-6 flex items-center space-x-3">
                       {submission.mediaUrl && (
-                        <a
-                          href={submission.mediaUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
-                        >
-                          View Media
-                        </a>
+                        <>
+                          <button
+                            onClick={() => handleViewMedia(submission)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium flex items-center space-x-1"
+                          >
+                            <span>
+                              {isImageFile(submission.fileType || getFileTypeFromUrl(submission.mediaUrl)) ? '🖼️' : 
+                               isVideoFile(submission.fileType || getFileTypeFromUrl(submission.mediaUrl)) ? '🎥' : '📎'}
+                            </span>
+                            <span>View Media</span>
+                          </button>
+                          <a
+                            href={submission.mediaUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+                          >
+                            Open Link
+                          </a>
+                        </>
                       )}
                       
                       {submission.status === 'pending' && (
@@ -471,17 +517,29 @@ const VolunteerDashboard = () => {
               <p><strong>Parent:</strong> {selectedSubmission.parentName}</p>
               <p className="mt-2"><strong>Milestone:</strong> {selectedSubmission.milestoneDescription}</p>
               {selectedSubmission.mediaUrl && (
-                <p className="mt-2">
-                  <strong>Media:</strong> 
-                  <a 
-                    href={selectedSubmission.mediaUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-indigo-600 hover:text-indigo-700 ml-2"
-                  >
-                    View Submitted Media
-                  </a>
-                </p>
+                <div className="mt-3">
+                  <strong>Media:</strong>
+                  <div className="mt-2 flex items-center space-x-3">
+                    <button
+                      onClick={() => handleViewMedia(selectedSubmission)}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium flex items-center space-x-1"
+                    >
+                      <span>
+                        {isImageFile(selectedSubmission.fileType || getFileTypeFromUrl(selectedSubmission.mediaUrl)) ? '🖼️' : 
+                         isVideoFile(selectedSubmission.fileType || getFileTypeFromUrl(selectedSubmission.mediaUrl)) ? '🎥' : '📎'}
+                      </span>
+                      <span>View Media</span>
+                    </button>
+                    <a 
+                      href={selectedSubmission.mediaUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:text-indigo-700 text-sm"
+                    >
+                      Open in New Tab
+                    </a>
+                  </div>
+                </div>
               )}
             </div>
             
@@ -538,6 +596,134 @@ const VolunteerDashboard = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Media Viewer Modal */}
+      {showMediaModal && selectedMedia && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] w-full overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  {selectedMedia.submission.milestoneTitle}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {selectedMedia.submission.childName} • {selectedMedia.fileName}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowMediaModal(false);
+                  setSelectedMedia(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Media Content */}
+            <div className="p-4 max-h-[70vh] overflow-auto">
+              {isImageFile(selectedMedia.type) ? (
+                <div className="text-center">
+                  <img
+                    src={selectedMedia.url}
+                    alt={selectedMedia.fileName}
+                    className="max-w-full max-h-[60vh] object-contain mx-auto rounded-lg shadow-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                  <div className="hidden text-center py-8">
+                    <div className="text-gray-400 text-4xl mb-2">🖼️</div>
+                    <p className="text-gray-600">Unable to load image</p>
+                    <a
+                      href={selectedMedia.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:text-indigo-700 text-sm mt-2 inline-block"
+                    >
+                      Open in new tab
+                    </a>
+                  </div>
+                </div>
+              ) : isVideoFile(selectedMedia.type) ? (
+                <div className="text-center">
+                  <video
+                    controls
+                    className="max-w-full max-h-[60vh] mx-auto rounded-lg shadow-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  >
+                    <source src={selectedMedia.url} type={selectedMedia.type} />
+                    Your browser does not support the video tag.
+                  </video>
+                  <div className="hidden text-center py-8">
+                    <div className="text-gray-400 text-4xl mb-2">🎥</div>
+                    <p className="text-gray-600">Unable to load video</p>
+                    <a
+                      href={selectedMedia.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:text-indigo-700 text-sm mt-2 inline-block"
+                    >
+                      Open in new tab
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 text-4xl mb-2">📎</div>
+                  <p className="text-gray-600 mb-4">Media type not supported for preview</p>
+                  <a
+                    href={selectedMedia.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium"
+                  >
+                    Open in New Tab
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50">
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">Submitted:</span> {formatDate(selectedMedia.submission.submittedAt)}
+              </div>
+              <div className="flex space-x-3">
+                <a
+                  href={selectedMedia.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm font-medium"
+                >
+                  Open Link
+                </a>
+                {selectedMedia.submission.status === 'pending' && (
+                  <button
+                    onClick={() => {
+                      setShowMediaModal(false);
+                      setSelectedSubmission(selectedMedia.submission);
+                      setShowReviewModal(true);
+                      setSelectedMedia(null);
+                    }}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm font-medium"
+                  >
+                    Review Submission
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

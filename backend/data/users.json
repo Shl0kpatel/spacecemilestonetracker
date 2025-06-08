@@ -38,5 +38,13 @@
     "contact": "+919822334455",
     "username": "rohit_volunteer",
     "password": "volunteer456"
+  },
+  {
+    "id": 6,
+    "name": "Aman",
+    "contact": "+91 8860714065",
+    "username": "Aman_gupta",
+    "password": "12345",
+    "role": "parent"
   }
 ]
