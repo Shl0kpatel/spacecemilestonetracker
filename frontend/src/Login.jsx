@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import bg from './assets/loginimg.jpeg';
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });

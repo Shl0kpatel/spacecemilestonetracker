@@ -37,7 +37,8 @@ const Register = () => {
         
         // Navigate based on role
         if (data.user.role === 'parent') {
-          navigate('/parent-dashboard');
+          // For new parents, redirect to child registration
+          navigate('/child-registration');
         } else if (data.user.role === 'volunteer') {
           navigate('/volunteer-dashboard');
         }

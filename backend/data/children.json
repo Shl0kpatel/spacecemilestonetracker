@@ -33,5 +33,38 @@
     "name": "Rohan Patel",
     "dob": "2018-07-19",
     "ageGroup": "4-6"
+  },
+  {
+    "_id": "child_1749349994670_0ngpughxj",
+    "parentId": 1,
+    "name": "Test Child",
+    "dob": "2020-01-01",
+    "ageGroup": "4-6",
+    "gender": "male",
+    "medicalConditions": null,
+    "allergies": null,
+    "createdAt": "2025-06-08T02:33:14.670Z"
+  },
+  {
+    "_id": "child_1749350104493_wmjpqlze0",
+    "parentId": 8,
+    "name": "New Child Test",
+    "dob": "2022-03-15",
+    "ageGroup": "0-3",
+    "gender": "female",
+    "medicalConditions": "None",
+    "allergies": "Peanuts",
+    "createdAt": "2025-06-08T02:35:04.493Z"
+  },
+  {
+    "_id": "child_1749350482460_qga467jk7",
+    "parentId": 9,
+    "name": "Ankush",
+    "dob": "2024-06-03",
+    "ageGroup": "0-3",
+    "gender": "male",
+    "medicalConditions": null,
+    "allergies": null,
+    "createdAt": "2025-06-08T02:41:22.460Z"
   }
 ]
