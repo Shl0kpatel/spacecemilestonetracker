@@ -98,12 +98,6 @@ const Home = () => {
               >
                 {t('startTracking')}
               </Link>
-              <Link
-                to="/milestonesstatus"
-                className="bg-white hover:bg-gray-50 text-indigo-600 px-8 py-4 rounded-lg text-lg font-medium border-2 border-indigo-600 shadow-lg hover:shadow-xl transition-all"
-              >
-                {t('viewDemo')}
-              </Link>
             </div>
           )}
         </div>
@@ -133,20 +127,6 @@ const Home = () => {
               {t('expertReviewDesc')}
             </p>
           </div>
-        </div>
-
-        {/* Demo Section */}
-        <div className="mt-16 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">See It In Action</h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Explore our milestone tracking system with demo data
-          </p>
-          <Link
-            to="/milestonesstatus"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all"
-          >
-            View Demo Milestones
-          </Link>
         </div>
       </main>
     </div>
