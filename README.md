@@ -1,5 +1,5 @@
 # Team-28
-# SpacECE Milestone Tracker
+# Milestone Tracker
 
 A full-stack platform for tracking children's developmental milestones, designed for parents and volunteers. Features include milestone submission with media evidence, expert review, file uploads to Cloudinary, multilingual support, and a modern React UI.
 
