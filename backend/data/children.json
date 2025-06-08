@@ -66,5 +66,16 @@
     "medicalConditions": null,
     "allergies": null,
     "createdAt": "2025-06-08T02:41:22.460Z"
+  },
+  {
+    "_id": "child_1749358179395_h78w88mib",
+    "parentId": 6,
+    "name": "Hammesh",
+    "dob": "2025-04-10",
+    "ageGroup": "0-3",
+    "gender": "male",
+    "medicalConditions": null,
+    "allergies": null,
+    "createdAt": "2025-06-08T04:49:39.395Z"
   }
 ]

@@ -199,5 +199,22 @@
     "reviewedBy": null,
     "rejectionReason": null,
     "feedback": null
+  },
+  {
+    "_id": "ms_1749358411839_dcvn20tdt",
+    "childId": "child_1749358179395_h78w88mib",
+    "milestoneId": "1",
+    "status": "pending",
+    "mediaUrl": "https://res.cloudinary.com/dot7gszla/image/upload/v1749358378/milestone-images/pewzw4zxjjn0ut7fvbeg.jpg",
+    "mediaType": "image",
+    "mediaSize": 0.03,
+    "mediaDuration": null,
+    "fileName": "WhatsApp Image 2025-05-31 at 10.11.50_a97dc74b.jpg",
+    "fileType": "image/jpeg",
+    "submittedAt": "2025-06-08T04:53:31.839Z",
+    "reviewedAt": null,
+    "reviewedBy": null,
+    "rejectionReason": null,
+    "feedback": null
   }
 ]
