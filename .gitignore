@@ -1,0 +1,2 @@
+# Ignore Botpress chatbot config/scripts
+frontend/public/botpress-chatbot.js

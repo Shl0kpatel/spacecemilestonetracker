@@ -1,3 +1,6 @@
+// Load environment variables
+require('dotenv').config();
+
 const express = require("express");
 const path = require("path");
 const app = express();
@@ -28,6 +31,19 @@ app.use("/api/milestones", milestoneRoutes);
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('=== GLOBAL ERROR HANDLER ===');
+  console.error('Error:', err);
+  console.error('Error message:', err.message);
+  console.error('Error stack:', err.stack);
+  
+  res.status(500).json({
+    error: err.message || 'Internal server error',
+    details: err.toString()
+  });
 });
 
 const PORT = process.env.PORT || 3000;

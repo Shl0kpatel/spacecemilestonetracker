@@ -137,15 +137,15 @@ const Home = () => {
 
         {/* Demo Section */}
         <div className="mt-16 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('seeInAction')}</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">See It In Action</h2>
           <p className="text-xl text-gray-600 mb-8">
-            {t('exploreDemo')}
+            Explore our milestone tracking system with demo data
           </p>
           <Link
             to="/milestonesstatus"
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all"
           >
-            {t('viewDemoMilestones')}
+            View Demo Milestones
           </Link>
         </div>
       </main>
