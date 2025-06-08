@@ -5,6 +5,74 @@
     "parentName": "Rajesh Kumar",
     "message": "hello i have concern with my son",
     "createdAt": "2025-06-07T23:36:53.589Z",
-    "status": "open"
+    "status": "closed",
+    "closedAt": "2025-06-08T00:26:34.871Z"
+  },
+  {
+    "_id": "ticket_1749341788477_xtqvuxqeh",
+    "parentId": 1,
+    "parentName": "Rajesh Kumar",
+    "message": "hello",
+    "createdAt": "2025-06-08T00:16:28.477Z",
+    "status": "closed",
+    "closedAt": "2025-06-08T00:29:21.578Z"
+  },
+  {
+    "_id": "ticket_1749342394871_6inkl4jba",
+    "parentId": 1,
+    "volunteerId": 1,
+    "parentName": "Rajesh Kumar",
+    "message": "Test reply",
+    "createdAt": "2025-06-08T00:26:34.871Z",
+    "status": "closed",
+    "replyTo": "ticket_1749339413589_1vuc0p6t7"
+  },
+  {
+    "_id": "ticket_1749342561578_y1qq0rmmm",
+    "parentId": 1,
+    "volunteerId": 4,
+    "parentName": "Rajesh Kumar",
+    "message": "hello how can i help you",
+    "createdAt": "2025-06-08T00:29:21.578Z",
+    "status": "closed",
+    "replyTo": "ticket_1749341788477_xtqvuxqeh"
+  },
+  {
+    "_id": "ticket_1749342853571_15pn4n0iz",
+    "parentId": 1,
+    "parentName": "Rajesh Kumar",
+    "message": "hello i need help",
+    "createdAt": "2025-06-08T00:34:13.571Z",
+    "status": "closed",
+    "closedAt": "2025-06-08T00:34:29.837Z"
+  },
+  {
+    "_id": "ticket_1749342869837_oiwv1lt9l",
+    "parentId": 1,
+    "volunteerId": 4,
+    "parentName": "Rajesh Kumar",
+    "message": "yes i will contact you",
+    "createdAt": "2025-06-08T00:34:29.837Z",
+    "status": "closed",
+    "replyTo": "ticket_1749342853571_15pn4n0iz"
+  },
+  {
+    "_id": "ticket_1749342945300_tcnn1d5q3",
+    "parentId": 1,
+    "parentName": "Rajesh Kumar",
+    "message": "help",
+    "createdAt": "2025-06-08T00:35:45.300Z",
+    "status": "closed",
+    "closedAt": "2025-06-08T00:36:25.116Z"
+  },
+  {
+    "_id": "ticket_1749342985116_ai130nqqh",
+    "parentId": 1,
+    "volunteerId": 4,
+    "parentName": "Rajesh Kumar",
+    "message": "help",
+    "createdAt": "2025-06-08T00:36:25.116Z",
+    "status": "closed",
+    "replyTo": "ticket_1749342945300_tcnn1d5q3"
   }
 ]

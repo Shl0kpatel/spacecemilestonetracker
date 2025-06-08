@@ -272,4 +272,43 @@ router.get('/tickets', (req, res) => {
   }
 });
 
+// Volunteer replies to a ticket (creates a new ticket message and closes the ticket)
+router.post('/tickets/:ticketId/reply', (req, res) => {
+  try {
+    const ticketId = req.params.ticketId;
+    const { reply, volunteerId } = req.body;
+    if (!reply || !reply.trim() || !volunteerId) {
+      return res.status(400).json({ error: 'Reply message and volunteerId are required' });
+    }
+    const tickets = readJSONFile('tickets.json');
+    const ticket = tickets.find(t => t._id === ticketId);
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    if (ticket.status === 'closed') {
+      return res.status(400).json({ error: 'Ticket is already closed' });
+    }
+    // Create a new ticket message for the reply
+    const replyTicket = {
+      _id: 'ticket_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      parentId: ticket.parentId,
+      volunteerId: volunteerId,
+      parentName: ticket.parentName,
+      message: reply.trim(),
+      createdAt: new Date().toISOString(),
+      status: 'closed',
+      replyTo: ticket._id // reference to the original ticket
+    };
+    tickets.push(replyTicket);
+    // Close the original ticket
+    ticket.status = 'closed';
+    ticket.closedAt = new Date().toISOString();
+    writeJSONFile('tickets.json', tickets);
+    res.json({ message: 'Reply sent and ticket closed', ticket: replyTicket });
+  } catch (error) {
+    console.error('Reply error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;

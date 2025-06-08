@@ -15,6 +15,10 @@ const VolunteerDashboard = () => {
   const [allSubmissions, setAllSubmissions] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [ticketsLoading, setTicketsLoading] = useState(true);
+  const [replyingTicketId, setReplyingTicketId] = useState(null);
+  const [replyMessage, setReplyMessage] = useState('');
+  const [replySubmitting, setReplySubmitting] = useState(false);
+  const [replySuccess, setReplySuccess] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -138,6 +142,44 @@ const VolunteerDashboard = () => {
     navigate('/');
   };
 
+  const handleReply = async (ticketId) => {
+    if (!replyMessage.trim()) return;
+
+    setReplySubmitting(true);
+    setReplySuccess(false);
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/parents/tickets/${ticketId}/reply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reply: replyMessage.trim(),
+          volunteerId: user.id
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setReplySuccess(true);
+        setTimeout(() => {
+          setReplyingTicketId(null);
+          setReplyMessage('');
+          setReplySuccess(false);
+          fetchTickets();
+        }, 2000);
+      } else {
+        alert(data.error || 'Failed to send reply');
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    } finally {
+      setReplySubmitting(false);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'accepted': return 'text-green-600 bg-green-100';
@@ -169,6 +211,7 @@ const VolunteerDashboard = () => {
   }
 
   const currentSubmissions = filter === 'pending' ? pendingSubmissions : allSubmissions;
+  const openTickets = tickets.filter(ticket => ticket.status === 'open');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -198,16 +241,50 @@ const VolunteerDashboard = () => {
           </div>
           {ticketsLoading ? (
             <div className="text-center py-8 text-gray-500">Loading tickets...</div>
-          ) : tickets.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No tickets found.</div>
+          ) : openTickets.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No open tickets found.</div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {tickets.map(ticket => (
+              {openTickets.map(ticket => (
                 <div key={ticket._id} className="px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-gray-900">{ticket.parentName}</div>
                       <div className="text-sm text-gray-600">{ticket.message}</div>
+                      <div className="flex gap-2 mt-2">
+                        {replyingTicketId === ticket._id ? (
+                          <>
+                            <input
+                              type="text"
+                              className="border rounded px-2 py-1 text-sm w-64"
+                              placeholder="Type your reply..."
+                              value={replyMessage}
+                              onChange={e => setReplyMessage(e.target.value)}
+                              disabled={replySubmitting}
+                            />
+                            <button
+                              onClick={() => handleReply(ticket._id)}
+                              disabled={replySubmitting || !replyMessage.trim()}
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs font-medium disabled:opacity-50"
+                            >
+                              {replySubmitting ? 'Sending...' : replySuccess ? 'Sent!' : 'Send'}
+                            </button>
+                            <button
+                              onClick={() => { setReplyingTicketId(null); setReplyMessage(''); }}
+                              className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded text-xs font-medium"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => { setReplyingTicketId(ticket._id); setReplyMessage(''); }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium"
+                          >
+                            Reply
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="text-xs text-gray-500 text-right">
                       {new Date(ticket.createdAt).toLocaleString()}

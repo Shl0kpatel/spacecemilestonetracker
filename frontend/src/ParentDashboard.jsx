@@ -14,6 +14,9 @@ const ParentDashboard = () => {
   const [ticketMessage, setTicketMessage] = useState('');
   const [ticketSubmitting, setTicketSubmitting] = useState(false);
   const [ticketSuccess, setTicketSuccess] = useState(false);
+  const [showTicketReplies, setShowTicketReplies] = useState(false);
+  const [latestVolunteerReply, setLatestVolunteerReply] = useState(null);
+  const [hasNewReply, setHasNewReply] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,6 +34,7 @@ const ParentDashboard = () => {
 
     setUser(parsedUser);
     fetchDashboardData(parsedUser.id);
+    fetchLatestVolunteerReply(parsedUser.id);
   }, [navigate]);
 
   const fetchDashboardData = async (parentId) => {
@@ -49,6 +53,35 @@ const ParentDashboard = () => {
       setLoading(false);
     }
   };
+
+  // Fetch latest volunteer reply for this parent
+  const fetchLatestVolunteerReply = async () => {
+    if (!user?.id) return;
+    try {
+      const response = await fetch(`http://localhost:3000/api/parents/tickets?parentId=${user.id}`);
+      const data = await response.json();
+      if (response.ok) {
+        // Find the latest closed ticket with a volunteerId (i.e., a reply)
+        const replies = data.filter(t => t.status === 'closed' && t.volunteerId);
+        if (replies.length > 0) {
+          replies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setLatestVolunteerReply(replies[0]);
+          // Only show red dot if reply is new (not viewed)
+          setHasNewReply(!localStorage.getItem('lastViewedReplyId') || localStorage.getItem('lastViewedReplyId') !== replies[0]._id);
+        } else {
+          setLatestVolunteerReply(null);
+          setHasNewReply(false);
+        }
+      }
+    } catch (error) {
+      setLatestVolunteerReply(null);
+      setHasNewReply(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLatestVolunteerReply();
+  }, [user, showTicketReplies]);
 
   const handleSubmitMilestone = async (e) => {
     e.preventDefault();
@@ -177,7 +210,25 @@ const ParentDashboard = () => {
               <h1 className="text-2xl font-bold text-gray-900">Parent Dashboard</h1>
               <p className="text-gray-600">Welcome back, {user?.name}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setShowTicketReplies(true);
+                    if (latestVolunteerReply) {
+                      localStorage.setItem('lastViewedReplyId', latestVolunteerReply._id);
+                      setHasNewReply(false);
+                    }
+                  }}
+                  className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
+                  title="View Latest Reply"
+                >
+                  <span role="img" aria-label="messages" className="text-2xl">💬</span>
+                  {hasNewReply && (
+                    <span className="absolute top-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-red-500"></span>
+                  )}
+                </button>
+              </div>
               <button
                 onClick={() => setShowTicketModal(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -401,6 +452,31 @@ const ParentDashboard = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Latest Volunteer Reply Modal */}
+      {showTicketReplies && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Latest Volunteer Reply</h3>
+            {latestVolunteerReply ? (
+              <div className="space-y-2">
+                <div className="font-medium text-gray-900 mb-1">{latestVolunteerReply.message}</div>
+                <div className="text-xs text-gray-500">{new Date(latestVolunteerReply.createdAt).toLocaleString()}</div>
+              </div>
+            ) : (
+              <div className="text-gray-500">No replies from volunteers yet.</div>
+            )}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowTicketReplies(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
