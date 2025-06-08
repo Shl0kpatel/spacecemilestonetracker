@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const ParentDashboard = () => {
   const [user, setUser] = useState(null);
@@ -11,6 +13,20 @@ const ParentDashboard = () => {
   const [mediaUrl, setMediaUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Play audio guide on mount
+    const lang = i18n.language === 'hi' ? 'hi' : 'en';
+    const audio = new window.Audio(`/guide_${lang}.mp3`);
+    audioRef.current = audio;
+    audio.play();
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [i18n.language]);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -122,7 +138,7 @@ const ParentDashboard = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+          <p className="mt-4 text-gray-600">{t('loadingDashboard')}</p>
         </div>
       </div>
     );
@@ -135,15 +151,18 @@ const ParentDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Parent Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.name}</p>
+              <h1 className="text-2xl font-bold text-gray-900">{t('parentDashboardTitle')}</h1>
+              <p className="text-gray-600">{t('welcomeBack', { name: user?.name })}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Logout
-            </button>
+            <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                {t('logout')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -151,9 +170,9 @@ const ParentDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">👶</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Children Found</h3>
-            <p className="text-gray-600">Please contact admin to add your children to the system.</p>
+            <div className="text-gray-400 text-6xl mb-4">🧶</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noChildrenFound')}</h3>
+            <p className="text-gray-600">{t('contactAdminToAddChildren')}</p>
           </div>
         ) : (
           <div className="space-y-8">
@@ -164,21 +183,20 @@ const ParentDashboard = () => {
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">{child.name}</h2>
                       <p className="text-gray-600">
-                        Age: {child.age} • Age Group: {child.ageGroup}
+                        {t('age')}: {child.age} • {t('ageGroup')}: {child.ageGroup}
                       </p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-indigo-600">
                         {child.progress.completed}/{child.progress.total}
                       </div>
-                      <p className="text-sm text-gray-600">Milestones Completed</p>
+                      <p className="text-sm text-gray-600">{t('milestonesCompleted')}</p>
                     </div>
                   </div>
-                  
                   {/* Progress Bar */}
                   <div className="mt-4">
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>Progress</span>
+                      <span>{t('progress')}</span>
                       <span>{Math.round((child.progress.completed / child.progress.total) * 100)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -188,27 +206,25 @@ const ParentDashboard = () => {
                       ></div>
                     </div>
                   </div>
-
                   {/* Stats */}
                   <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-lg font-semibold text-green-600">{child.progress.completed}</div>
-                      <div className="text-xs text-gray-600">Completed</div>
+                      <div className="text-xs text-gray-600">{t('completed')}</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-yellow-600">{child.progress.pending}</div>
-                      <div className="text-xs text-gray-600">Under Review</div>
+                      <div className="text-xs text-gray-600">{t('underReview')}</div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-red-600">{child.progress.rejected}</div>
-                      <div className="text-xs text-gray-600">Needs Review</div>
+                      <div className="text-xs text-gray-600">{t('needsReview')}</div>
                     </div>
                   </div>
                 </div>
-
                 {/* Milestones */}
                 <div className="px-6 py-4">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Milestones</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">{t('recentMilestones')}</h3>
                   <div className="grid gap-4">
                     {child.milestones.slice(0, 6).map((milestone) => (
                       <div key={milestone.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
@@ -220,13 +236,13 @@ const ParentDashboard = () => {
                               {milestone.category}
                             </span>
                             <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
-                              Age {milestone.ageGroup}
+                              {t('age')} {milestone.ageGroup}
                             </span>
                           </div>
                         </div>
                         <div className="ml-4 flex items-center space-x-3">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(milestone.status)}`}>
-                            {getStatusText(milestone.status)}
+                            {t(getStatusText(milestone.status))}
                           </span>
                           {milestone.status === 'not_started' && (
                             <button
@@ -237,7 +253,7 @@ const ParentDashboard = () => {
                               }}
                               className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs font-medium"
                             >
-                              Submit
+                              {t('submit')}
                             </button>
                           )}
                           {milestone.mediaUrl && (
@@ -247,20 +263,19 @@ const ParentDashboard = () => {
                               rel="noopener noreferrer"
                               className="text-indigo-600 hover:text-indigo-700 text-xs"
                             >
-                              View Media
+                              {t('viewMedia')}
                             </a>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
-                  
                   <div className="mt-4 text-center">
                     <button
                       onClick={() => setSelectedChild(child)}
                       className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
                     >
-                      View All Milestones ({child.milestones.length})
+                      {t('viewAllMilestones', { count: child.milestones.length })}
                     </button>
                   </div>
                 </div>
@@ -269,32 +284,29 @@ const ParentDashboard = () => {
           </div>
         )}
       </div>
-
       {/* Submission Form Modal */}
       {showSubmissionForm && selectedMilestone && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Submit Milestone: {selectedMilestone.title}
+              {t('submitMilestoneFor', { title: selectedMilestone.title })}
             </h3>
-            
             <form onSubmit={handleSubmitMilestone}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Media URL (optional)
+                  {t('mediaUrlOptional')}
                 </label>
                 <input
                   type="url"
                   value={mediaUrl}
                   onChange={(e) => setMediaUrl(e.target.value)}
-                  placeholder="https://example.com/photo-or-video.jpg"
+                  placeholder={t('mediaUrlPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Provide a link to photo/video evidence (YouTube, Google Drive, etc.)
+                  {t('provideMediaLink')}
                 </p>
               </div>
-              
               <div className="flex space-x-3">
                 <button
                   type="button"
@@ -305,14 +317,14 @@ const ParentDashboard = () => {
                   }}
                   className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50"
                 >
-                  {submitting ? 'Submitting...' : 'Submit'}
+                  {submitting ? t('submitting') : t('submit')}
                 </button>
               </div>
             </form>

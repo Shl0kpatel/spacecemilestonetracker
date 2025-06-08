@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const MilestoneDisplay = () => {
   const [milestones, setMilestones] = useState([]);
@@ -7,6 +9,7 @@ const MilestoneDisplay = () => {
   const [error, setError] = useState(null);
   const [selectedChild, setSelectedChild] = useState('');
   const [selectedAgeGroup, setSelectedAgeGroup] = useState('all');
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchData();
@@ -65,7 +68,7 @@ const MilestoneDisplay = () => {
     return (
       <div className="max-w-6xl mx-auto p-5">
         <div className="text-center p-10 bg-gray-50 rounded-xl">
-          <div className="text-xl text-gray-600">Loading milestones...</div>
+          <div className="text-xl text-gray-600">{t('loadingMilestones')}</div>
         </div>
       </div>
     );
@@ -75,13 +78,13 @@ const MilestoneDisplay = () => {
     return (
       <div className="max-w-6xl mx-auto p-5">
         <div className="text-center p-10 bg-red-50 border border-red-200 rounded-xl">
-          <h3 className="text-xl font-semibold text-red-800 mb-2">Error</h3>
-          <p className="text-red-600 mb-4">{error}</p>
+          <h3 className="text-xl font-semibold text-red-800 mb-2">{t('error')}</h3>
+          <p className="text-red-600 mb-4">{t('fetchError')}</p>
           <button 
             onClick={fetchData} 
             className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition-colors"
           >
-            Retry
+            {t('retry')}
           </button>
         </div>
       </div>
@@ -90,14 +93,18 @@ const MilestoneDisplay = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-5 font-sans">
+      <div className="flex justify-end mb-4">
+        <LanguageSwitcher />
+      </div>
+      
       <h1 className="text-4xl font-semibold text-center text-gray-800 mb-8">
-        Child Development Milestones
+        {t('childDevelopmentMilestones')}
       </h1>
       
       {/* Child Selection */}
       <div className="mb-6 p-5 bg-white rounded-xl shadow-sm border">
         <label htmlFor="child-select" className="block text-lg font-semibold text-gray-700 mb-3">
-          Select Child:
+          {t('selectChild')}
         </label>
         <select 
           id="child-select"
@@ -108,10 +115,10 @@ const MilestoneDisplay = () => {
           }}
           className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base bg-white cursor-pointer focus:outline-none focus:border-blue-500"
         >
-          <option value="">Select a child to see their milestones</option>
+          <option value="">{t('selectChildToSeeMilestones')}</option>
           {children.map(child => (
             <option key={child._id} value={child._id}>
-              {child.name} (Age Group: {child.ageGroup} years)
+              {child.name} ({t('ageGroup')}: {child.ageGroup} {t('years')})
             </option>
           ))}
         </select>
@@ -121,7 +128,7 @@ const MilestoneDisplay = () => {
       {!selectedChild && (
         <div className="flex items-center gap-3 mb-5 p-5 bg-gray-50 rounded-xl">
           <label htmlFor="age-filter" className="font-semibold text-gray-700">
-            Filter by Age Group:
+            {t('filterByAgeGroup')}
           </label>
           <select 
             id="age-filter"
@@ -131,7 +138,7 @@ const MilestoneDisplay = () => {
           >
             {ageGroups.map(group => (
               <option key={group} value={group}>
-                {group === 'all' ? 'All Age Groups' : `${group} years`}
+                {group === 'all' ? t('allAgeGroups') : `${group} ${t('years')}`}
               </option>
             ))}
           </select>
@@ -142,22 +149,22 @@ const MilestoneDisplay = () => {
       {selectedChild && (
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
           <h2 className="text-xl font-semibold text-blue-800">
-            Showing milestones for: {children.find(c => c._id === selectedChild)?.name}
+            {t('showingMilestonesFor', { name: children.find(c => c._id === selectedChild)?.name })}
           </h2>
           <p className="text-blue-600">
-            Age Group: {children.find(c => c._id === selectedChild)?.ageGroup} years
+            {t('ageGroup')}: {children.find(c => c._id === selectedChild)?.ageGroup} {t('years')}
           </p>
         </div>
       )}
 
       <div className="text-center text-gray-600 mb-8 text-lg">
-        Showing {filteredMilestones.length} milestone{filteredMilestones.length !== 1 ? 's' : ''}
+        {t('showingMilestoneCount', { count: filteredMilestones.length })}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
         {filteredMilestones.length === 0 ? (
           <div className="col-span-full text-center p-10 text-gray-600 text-xl bg-gray-50 rounded-xl">
-            No milestones found for the selected age group.
+            {t('noMilestonesFound')}
           </div>
         ) : (
           filteredMilestones.map(milestone => (
@@ -174,11 +181,11 @@ const MilestoneDisplay = () => {
                   milestone.ageGroup === '4-6' ? 'bg-purple-100 text-purple-700' :
                   'bg-green-100 text-green-700'
                 }`}>
-                  {milestone.ageGroup} years
+                  {milestone.ageGroup} {t('years')}
                 </span>
               </div>
               <p className="text-gray-600 leading-relaxed">
-                {milestone.description || 'No description available.'}
+                {milestone.description || t('noDescriptionAvailable')}
               </p>
             </div>
           ))
@@ -190,7 +197,7 @@ const MilestoneDisplay = () => {
           onClick={fetchData} 
           className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
         >
-          🔄 Refresh Data
+          🔄 {t('refreshData')}
         </button>
       </div>
     </div>

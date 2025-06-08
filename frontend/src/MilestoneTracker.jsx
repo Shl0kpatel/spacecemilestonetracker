@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './MilestoneTracker.css';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const MilestoneTracker = () => {
   const [milestones, setMilestones] = useState([]);
@@ -13,6 +15,7 @@ const MilestoneTracker = () => {
     mediaSize: '',
     mediaDuration: ''
   });
+  const { t } = useTranslation();
 
   // Mock data - replace with actual API calls
   useEffect(() => {
@@ -125,20 +128,24 @@ const MilestoneTracker = () => {
 
   return (
     <div className="milestone-tracker">
-      <h1>Milestone Tracker</h1>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <LanguageSwitcher />
+      </div>
+      
+      <h1>{t('milestoneTrackerTitle')}</h1>
       
       {/* Child Selection */}
       <div className="child-selection">
-        <label htmlFor="child-select">Select Child:</label>
+        <label htmlFor="child-select">{t('selectChild')}</label>
         <select 
           id="child-select"
           value={selectedChild} 
           onChange={(e) => setSelectedChild(e.target.value)}
         >
-          <option value="">Select a child</option>
+          <option value="">{t('selectAChild')}</option>
           {children.map(child => (
             <option key={child._id} value={child._id}>
-              {child.name} (Age Group: {child.ageGroup})
+              {child.name} ({t('ageGroup')}: {child.ageGroup})
             </option>
           ))}
         </select>
@@ -147,19 +154,19 @@ const MilestoneTracker = () => {
       {/* Milestone List */}
       {selectedChild && (
         <div className="milestone-list">
-          <h2>Milestones for {children.find(c => c._id === selectedChild)?.name}</h2>
+          <h2>{t('milestonesFor', { name: children.find(c => c._id === selectedChild)?.name })}</h2>
           {filteredMilestones.map(milestone => (
             <div key={milestone._id} className="milestone-item">
               <div className="milestone-content">
                 <h3>{milestone.title}</h3>
                 <p>{milestone.description}</p>
-                <span className="age-group">Age Group: {milestone.ageGroup}</span>
+                <span className="age-group">{t('ageGroup')}: {milestone.ageGroup}</span>
               </div>
               <button 
                 className="upload-btn"
                 onClick={() => handleUploadClick(milestone)}
               >
-                📷 Upload Media
+                📷 {t('uploadMedia')}
               </button>
             </div>
           ))}
@@ -170,23 +177,23 @@ const MilestoneTracker = () => {
       {showUploadForm && selectedMilestone && (
         <div className="modal-overlay">
           <div className="upload-form">
-            <h3>Upload Media for: {selectedMilestone.title}</h3>
+            <h3>{t('uploadMediaFor', { title: selectedMilestone.title })}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="mediaUrl">Media URL (Image/Video Link):</label>
+                <label htmlFor="mediaUrl">{t('mediaUrlLabel')}</label>
                 <input
                   type="url"
                   id="mediaUrl"
                   name="mediaUrl"
                   value={formData.mediaUrl}
                   onChange={handleFormChange}
-                  placeholder="https://example.com/your-media-link"
+                  placeholder={t('mediaUrlPlaceholder')}
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="mediaType">Media Type:</label>
+                <label htmlFor="mediaType">{t('mediaType')}</label>
                 <select
                   id="mediaType"
                   name="mediaType"
@@ -194,20 +201,20 @@ const MilestoneTracker = () => {
                   onChange={handleFormChange}
                   required
                 >
-                  <option value="image">Image</option>
-                  <option value="video">Video</option>
+                  <option value="image">{t('image')}</option>
+                  <option value="video">{t('video')}</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <label htmlFor="mediaSize">Media Size (MB):</label>
+                <label htmlFor="mediaSize">{t('mediaSize')}</label>
                 <input
                   type="number"
                   id="mediaSize"
                   name="mediaSize"
                   value={formData.mediaSize}
                   onChange={handleFormChange}
-                  placeholder="e.g., 2.5"
+                  placeholder={t('mediaSizePlaceholder')}
                   step="0.1"
                   min="0"
                   required
@@ -216,21 +223,21 @@ const MilestoneTracker = () => {
 
               {formData.mediaType === 'video' && (
                 <div className="form-group">
-                  <label htmlFor="mediaDuration">Duration (seconds):</label>
+                  <label htmlFor="mediaDuration">{t('mediaDuration')}</label>
                   <input
                     type="number"
                     id="mediaDuration"
                     name="mediaDuration"
                     value={formData.mediaDuration}
                     onChange={handleFormChange}
-                    placeholder="e.g., 30"
+                    placeholder={t('mediaDurationPlaceholder')}
                     min="0"
                   />
                 </div>
               )}
 
               <div className="form-actions">
-                <button type="submit" className="submit-btn">Submit</button>
+                <button type="submit" className="submit-btn">{t('submit')}</button>
                 <button 
                   type="button" 
                   className="cancel-btn"
@@ -245,7 +252,7 @@ const MilestoneTracker = () => {
                     });
                   }}
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
               </div>
             </form>
