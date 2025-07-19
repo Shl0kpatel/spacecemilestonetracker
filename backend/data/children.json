@@ -4,78 +4,9 @@
     "parentId": 1,
     "name": "Aarav Kumar",
     "dob": "2021-05-10",
-    "ageGroup": "0-3"
-  },
-  {
-    "_id": "60d21b4667d0d8992e610c02",
-    "parentId": 1,
-    "name": "Kavya Kumar",
-    "dob": "2019-11-22",
-    "ageGroup": "4-6"
-  },
-  {
-    "_id": "60d21b4667d0d8992e610c03",
-    "parentId": 2,
-    "name": "Arjun Sharma",
-    "dob": "2017-08-15",
-    "ageGroup": "7-8"
-  },
-  {
-    "_id": "60d21b4667d0d8992e610c04",
-    "parentId": 2,
-    "name": "Meera Sharma",
-    "dob": "2020-02-28",
-    "ageGroup": "0-3"
-  },
-  {
-    "_id": "60d21b4667d0d8992e610c05",
-    "parentId": 3,
-    "name": "Rohan Patel",
-    "dob": "2018-07-19",
-    "ageGroup": "4-6"
-  },
-  {
-    "_id": "child_1749349994670_0ngpughxj",
-    "parentId": 1,
-    "name": "Test Child",
-    "dob": "2020-01-01",
-    "ageGroup": "4-6",
-    "gender": "male",
-    "medicalConditions": null,
-    "allergies": null,
-    "createdAt": "2025-06-08T02:33:14.670Z"
-  },
-  {
-    "_id": "child_1749350104493_wmjpqlze0",
-    "parentId": 8,
-    "name": "New Child Test",
-    "dob": "2022-03-15",
-    "ageGroup": "0-3",
-    "gender": "female",
-    "medicalConditions": "None",
-    "allergies": "Peanuts",
-    "createdAt": "2025-06-08T02:35:04.493Z"
-  },
-  {
-    "_id": "child_1749350482460_qga467jk7",
-    "parentId": 9,
-    "name": "Ankush",
-    "dob": "2024-06-03",
     "ageGroup": "0-3",
     "gender": "male",
     "medicalConditions": null,
-    "allergies": null,
-    "createdAt": "2025-06-08T02:41:22.460Z"
-  },
-  {
-    "_id": "child_1749358179395_h78w88mib",
-    "parentId": 6,
-    "name": "Hammesh",
-    "dob": "2025-04-10",
-    "ageGroup": "0-3",
-    "gender": "male",
-    "medicalConditions": null,
-    "allergies": null,
-    "createdAt": "2025-06-08T04:49:39.395Z"
+    "allergies": null
   }
 ]

@@ -8,67 +8,11 @@
     "password": "parent123"
   },
   {
-    "id": 2,
-    "role": "parent",
-    "name": "Priya Sharma",
-    "contact": "+919812345678",
-    "username": "priya_sharma",
-    "password": "parent456"
-  },
-  {
-    "id": 3,
-    "role": "parent",
-    "name": "Amit Patel",
-    "contact": "+919800112233",
-    "username": "amit_patel",
-    "password": "parent789"
-  },
-  {
     "id": 4,
     "role": "volunteer",
     "name": "Dr. Sneha Gupta",
     "contact": "+919811223344",
     "username": "sneha_volunteer",
     "password": "volunteer123"
-  },
-  {
-    "id": 5,
-    "role": "volunteer",
-    "name": "Rohit Singh",
-    "contact": "+919822334455",
-    "username": "rohit_volunteer",
-    "password": "volunteer456"
-  },
-  {
-    "id": 6,
-    "name": "Aman",
-    "contact": "+91 8860714065",
-    "username": "Aman_gupta",
-    "password": "12345",
-    "role": "parent"
-  },
-  {
-    "id": 7,
-    "name": "Test Parent",
-    "contact": "+919999999999",
-    "username": "test_parent",
-    "password": "test123",
-    "role": "parent"
-  },
-  {
-    "id": 8,
-    "name": "New Parent Test",
-    "contact": "+919988776655",
-    "username": "new_parent_test",
-    "password": "test123",
-    "role": "parent"
-  },
-  {
-    "id": 9,
-    "name": "Aman ",
-    "contact": "+91 8888888888",
-    "username": "Aman_gupta123",
-    "password": "1234",
-    "role": "parent"
   }
 ]

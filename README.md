@@ -17,7 +17,6 @@ A full-stack platform for tracking children's developmental milestones, designed
 - [File Upload Guide](#file-upload-guide)
 - [Database Schema](#database-schema)
 - [API Endpoints](#api-endpoints)
-- [Botpress Chatbot Integration](#botpress-chatbot-integration)
 - [Demo Accounts](#demo-accounts)
 - [Contributing](#contributing)
 - [License](#license)
@@ -69,7 +68,6 @@ Team-28/
 - **SMS Notifications:** Parents notified on important updates (rejection, feedback)
 - **Multilingual Support:** English and Hindi (i18n)
 - **Modern UI:** Responsive React frontend with Tailwind CSS
-- **Botpress Chatbot:** Integrated support chatbot in the bottom-right corner
 
 ---
 
@@ -79,7 +77,6 @@ Team-28/
 - **Backend:** Node.js, Express, Multer, Cloudinary, (optionally MongoDB via Mongoose)
 - **Database:** JSON files (default) or MongoDB (recommended for production)
 - **File Storage:** Cloudinary
-- **Chatbot:** Botpress Webchat
 
 ---
 
@@ -228,21 +225,6 @@ See [`FILE_UPLOAD_GUIDE.md`](FILE_UPLOAD_GUIDE.md) for full details.
 **Volunteer Actions**
 - `GET /api/volunteers/dashboard` — Get submissions for review
 - `POST /api/volunteers/review/:submissionId` — Review a submission
-
----
-
-## Botpress Chatbot Integration
-
-The Botpress chatbot is integrated and appears in the bottom-right corner of the app.  
-Scripts are included in [`frontend/index.html`](frontend/index.html):
-
-```html
-<script src="https://cdn.botpress.cloud/webchat/v3.0/inject.js"></script>
-<script src="https://files.bpcontent.cloud/2025/06/07/22/20250607222825-16SKALZW.js"></script>
-```
-
-**Note:**  
-The chatbot config script is ignored in git via `frontend/.gitignore` to keep credentials private.
 
 ---
 
